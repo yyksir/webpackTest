@@ -33,7 +33,7 @@ module.exports ={
     mode:'production',//两种模式 production development
     entry:'./src/index.js',
     output:{
-        filename:'bundle.[fullhash:8].js',
+        filename:'static/js/bundle.[fullhash:8].js',
         path:resolve(__dirname,'build'),
     },
     plugins:[
@@ -47,7 +47,9 @@ module.exports ={
             hash:true,//hash值
        }),
        new MiniCssExtractPlugin({
-        filename:'main.css'
+        //filename:'static/css/[name].css'
+            filename: 'static/css/[name].[contenthash:8].css',
+            chunkFilename: 'static/css/[name].[contenthash:8].css'
        }),
     ],
     module:{
@@ -74,6 +76,46 @@ module.exports ={
                 "postcss-loader",
                 'less-loader'
                 ],
+            },
+            {
+                test: /\.js$/,
+                use: {
+                  loader: 'babel-loader',
+                },
+                include:resolve(__dirname,'src'),
+                exclude: '/node_modules/'
+            },
+            // 处理图片(file-loader来处理也可以，url-loader更适合图片)
+            {
+                test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+                loader: 'url-loader',
+                options: {
+                    limit: 10000,
+                    name: 'static/images/[name].[hash:7].[ext]',
+                },
+            },
+            // 处理多媒体文件
+            {
+                test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
+                loader: 'url-loader',
+                    options: {
+                    limit: 10000,
+                    name: 'static/media/[name].[hash:7].[ext]',
+                },
+            },
+            // 处理字体文件
+            {
+                test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
+                loader: 'url-loader',
+                options: {
+                    limit: 10000,
+                    name: 'static/fonts/[name].[hash:7].[ext]'
+                }
+            },
+            // html中引用的静态资源在这里处理,默认配置参数attrs=img:src,处理图片的src引用的资源.
+            {
+                test: /\.html$/,
+                loader: 'html-withimg-loader',
             },
         ],
     }
