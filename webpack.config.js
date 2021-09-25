@@ -6,6 +6,7 @@ let CssMinimizerPlugin = require("css-minimizer-webpack-plugin");//css的压缩
 let TerserPlugin   = require('terser-webpack-plugin');//压缩js
 
 const devMode = process.env.NODE_ENV == "production";
+const { out } = require('./outPath');
 console.log(devMode)
 module.exports ={
     optimization: {
@@ -35,6 +36,7 @@ module.exports ={
     output:{
         filename:'static/js/bundle.[fullhash:8].js',
         path:resolve(__dirname,'build'),
+        publicPath:`/${out}/`,
     },
     plugins:[
        new HtmlWebpackPlugin({
