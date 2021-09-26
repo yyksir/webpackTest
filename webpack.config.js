@@ -4,6 +4,9 @@ let HtmlWebpackPlugin = require('html-webpack-plugin');
 let  MiniCssExtractPlugin  = require('mini-css-extract-plugin');//提取css文件成为 单独的css
 let CssMinimizerPlugin = require("css-minimizer-webpack-plugin");//css的压缩
 let TerserPlugin   = require('terser-webpack-plugin');//压缩js
+const  {CleanWebpackPlugin}  = require('clean-webpack-plugin');//清空打包后的文件
+const  CopyWebpackPlugin = require('copy-webpack-plugin');//复制需要的文件
+const webpack = require('webpack');
 
 const devMode = process.env.NODE_ENV == "production";
 const { out } = require('./outPath');
@@ -38,7 +41,9 @@ module.exports ={
         path:resolve(__dirname,'build'),
         publicPath:`/${out}/`,
     },
+    devtool: 'inline-source-map',
     plugins:[
+        new webpack.IgnorePlugin(/\.\/locale/,/moment/),//打包去除moment中的所有语言包 但是语言包需要单独引入 其他的模块可参考
        new HtmlWebpackPlugin({
             template: './src/index.html',//'./src/index.html',// join(__dirname, './src/index.html'), // 引入模版
             filename:'index.html',//打包后名称
@@ -53,9 +58,32 @@ module.exports ={
             filename: 'static/css/[name].[contenthash:8].css',
             chunkFilename: 'static/css/[name].[contenthash:8].css'
        }),
+       new CleanWebpackPlugin(),
+       new CopyWebpackPlugin({
+           patterns:[{ from:'./public', to:'public' }]
+       }),
+       new webpack.BannerPlugin({
+        banner: "hash:[fullhash],  name:[name], filebase:[base], query:[query], file:[file]"
+       })
     ],
+    resolve: { // 配置路径别名
+        extensions: ['.js', '.jsx', '.vue', '.styl','less'], // import引入文件的时候不用加后缀
+        modules: [
+            'node_modules',
+            resolve(__dirname, '../src')
+        ],
+        alias: {
+            '@': resolve(__dirname, '../src')
+        },
+        // fallback: {
+        //     crypto: require.resolve('crypto-browserify'),
+        //     stream: require.resolve('stream-browserify'),
+        //     buffer: require.resolve('buffer/')
+        // }
+    },
     module:{
         //css-loader 识别@import这种语法 style-loader 把css插入到head的标签中 MiniCssExtractPlugin.loader
+        noParse:'/jquery/',//不解析其所依赖的包 提高打包速度
         rules: [
             {
                 test: /\.css$/i,
