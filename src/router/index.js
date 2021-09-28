@@ -8,9 +8,15 @@ import Home from '../views/home';
 Vue.use(VueRouter);
 
 const router = new VueRouter({
-    mode: process.env.NODE_ENV === 'production' ? 'history' : 'hash',
+    mode: 'history' ,
     // mode: 'history',
     base: `/${out}`,
+    scrollBehavior() {
+        return {
+            x: 0,
+            y: 0
+        }
+    },
     routes: [
         {
             path: '/Home',

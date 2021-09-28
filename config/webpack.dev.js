@@ -22,7 +22,7 @@ const config = {
     output:{
         filename:'static/js/[name][fullhash:8].js',
         path:resolve(__dirname,`../${out}`),
-        publicPath:`./`,
+        publicPath:"/",
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
@@ -41,7 +41,7 @@ const config = {
         //     }]
         // }),
         new HtmlWebpackPlugin({
-            template: join(__dirname, '../public/index.html'), // 引入模版
+            template: join(__dirname, '../src/index.html'), // 引入模版
             favicon: join(__dirname, '../src/assets/favicon.ico'),
             filename: 'index.html',
             minify: { // 对index.html压缩
@@ -79,6 +79,9 @@ const config = {
         noInfo: true,
         overlay: { // 当出现编译器错误或警告时，就在网页上显示一层黑色的背景层和错误信息
             errors: true
+        },
+        historyApiFallback: {//路由使用history模式下 需要加此命令 
+            index: '/index.html' //与output的publicPath
         },
         disableHostCheck: true, //  不检查主机
     }
